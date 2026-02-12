@@ -1,0 +1,7 @@
+<?xml version="1.0" ?>
+<jpackage-state version="21.0.10" platform="linux">
+  <app-version>1.0</app-version>
+  <main-launcher>PrintAgent</main-launcher>
+  <main-class>agent.PrintAgentApp</main-class>
+  <signed>false</signed>
+  <app-store>false</app-store></jpackage-state>

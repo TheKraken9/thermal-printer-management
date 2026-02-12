@@ -1,0 +1,30 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+group = 'org.srdr'
+version = '1.0.0'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'com.github.anastaciocintra:escpos-coffee:4.1.0'
+    implementation 'com.sun.net.httpserver:http:20070405'
+
+    // 🔹 Jackson (OBLIGATOIRE avec version)
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.17.1'
+}
+
+
+application {
+    mainClass = 'agent.PrintAgentApp'
+}
