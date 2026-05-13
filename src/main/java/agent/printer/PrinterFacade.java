@@ -8,7 +8,9 @@ public class PrinterFacade {
         String os = System.getProperty("os.name").toLowerCase();
 
         if (os.contains("linux")) {
-            new LinuxPrinter().print(receipt);
+            //new LinuxPrinter().print(receipt);
+            //new LinuxPrinter().print(receipt);
+            new WindowsPrinter().print(receipt);
         } else if (os.contains("win")) {
             new WindowsPrinter().print(receipt);
         } else {

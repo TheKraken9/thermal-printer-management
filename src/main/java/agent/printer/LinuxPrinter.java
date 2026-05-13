@@ -127,6 +127,11 @@ public class LinuxPrinter {
 
         escpos.writeLF(normalStyle, lineLeftRight("Paye:", formatPrice(r.montantPaye) + " Ar"));
 
+        long reste = r.totalTTC - r.montantPaye;
+        if (reste > 0) {
+            escpos.writeLF(boldStyle, lineLeftRight("RESTE:", formatPrice(reste) + " Ar"));
+        }
+
         if (r.monnaie > 0) {
             escpos.writeLF(normalStyle, lineLeftRight("Monnaie:", formatPrice(r.monnaie) + " Ar"));
         }

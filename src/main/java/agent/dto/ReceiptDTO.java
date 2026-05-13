@@ -14,6 +14,8 @@ public class ReceiptDTO {
     public String date;
     public String caissier;
 
+    public String moreInfo;
+
     public String clientName;
     public String clientPhone;
     public String clientAddress;
@@ -21,9 +23,35 @@ public class ReceiptDTO {
 
     public List<ReceiptLineDTO> produits;
 
+    // Livraison / retrait
+    public String fulfillmentType;
+    public String fulfillmentLabel;
+    public String pickupBoutiqueName;
+    public String deliveryAddress;
+    public Long deliveryFee;
+    public String fulfillmentDate;
+    public String fulfillmentTime;
+    public String fulfillmentTimeInstructions;
+
+    // Totaux
+    public Long sousTotal;
+    public Long totalHT;
+    public Long tva;
+    public Double tauxTVA;
+
+    // Remise globale
+    public Boolean hasDiscount;
+    public String discountType;
+    public Double discountValue;
+    public Long discountAmount;
+    public String discountReason;
+    public String discountLabel;
+
     public long totalTTC;
     public long montantPaye;
+    public Long montantRestant;
     public long monnaie;
 
     public String modePaiement;
+    public String messageRemerciement;
 }
