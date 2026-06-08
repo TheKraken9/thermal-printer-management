@@ -1,6 +1,7 @@
 package agent.printer;
 
 import agent.dto.ReceiptDTO;
+import agent.dto.ReceiptExtraLineDTO;
 import agent.dto.ReceiptLineDTO;
 
 import javax.print.*;
@@ -147,6 +148,55 @@ public class WindowsPrinter {
             }
         }
 
+
+        // Frais supplémentaires
+        if (r.saleExtras != null && !r.saleExtras.isEmpty()) {
+            sb.append(separator('=')).append("\n");
+            sb.append(center("FRAIS SUPPLEMENTAIRES")).append("\n");
+            sb.append(separator('-')).append("\n");
+
+            for (ReceiptExtraLineDTO extra : r.saleExtras) {
+                // Libellé + date
+                String labelLine = ascii(nvl(extra.label));
+                if (isNotEmpty(extra.executionDate)) {
+                    labelLine += " (" + extra.executionDate + ")";
+                }
+
+                // Ligne principale : libellé | qte x PU | total
+                String qteStr   = formatQuantity(extra.quantity) + " x " + formatPrice(extra.unitPrice) + " Ar";
+                String totalStr = formatPrice(extra.totalAmount) + " Ar";
+
+                if (labelLine.length() > 20) {
+                    sb.append(wrapText(labelLine, LINE_WIDTH)).append("\n");
+                    sb.append(lineLeftRight("  " + qteStr, totalStr)).append("\n");
+                } else {
+                    sb.append(lineColumns(labelLine, "", qteStr, totalStr)).append("\n");
+                }
+
+                // Statut paiement
+                String statusLabel = switch (nvl(extra.paymentStatus)) {
+                    case "completed" -> "Regle";
+                    case "partial"   -> "Partiel (" + formatPrice(extra.remainingAmount) + " Ar restant)";
+                    default          -> "En attente";
+                };
+                sb.append(lineLeftRight("  Statut:", statusLabel)).append("\n");
+
+                // Note
+                if (isNotEmpty(extra.note)) {
+                    sb.append("  Note: ")
+                            .append(wrapText(ascii(extra.note), LINE_WIDTH - 8))
+                            .append("\n");
+                }
+            }
+
+            // Sous-total frais supplémentaires
+            if (r.totalExtras != null && r.totalExtras > 0) {
+                sb.append(separator('-')).append("\n");
+                sb.append(lineLeftRight("Total frais supp.:", formatPrice(r.totalExtras) + " Ar")).append("\n");
+            }
+        }
+
+
         // Totaux
         sb.append(separator('=')).append("\n");
 
@@ -229,18 +279,20 @@ public class WindowsPrinter {
         sb.append(center("A bientot !")).append("\n");
         sb.append("\n\n\n");
 
-        /*System.out.println("========== APERCU TICKET ==========");
-        System.out.println(sb.toString());
-        System.out.println("======== FIN APERCU TICKET ========");
+        sb.append("\n\n\n\n");
 
-        if (service == null) {
-            System.out.println("Aucune imprimante detectee. Impression ignoree.");
-            return;
-        }*/
+        byte[] textData = sb.toString().getBytes(StandardCharsets.US_ASCII);
 
-        byte[] data = sb.toString().getBytes(StandardCharsets.US_ASCII);
+// commande ESC/POS pour couper
+        byte[] cut = new byte[]{0x1D, 0x56, 0x00};
+
+// concaténer
+        byte[] finalData = new byte[textData.length + cut.length];
+        System.arraycopy(textData, 0, finalData, 0, textData.length);
+        System.arraycopy(cut, 0, finalData, textData.length, cut.length);
+
         DocPrintJob job = service.createPrintJob();
-        job.print(new SimpleDoc(data, DocFlavor.BYTE_ARRAY.AUTOSENSE, null), null);
+        job.print(new SimpleDoc(finalData, DocFlavor.BYTE_ARRAY.AUTOSENSE, null), null);
     }
 
     // ═══════════════════════════════════════════════════════════
@@ -541,4 +593,12 @@ public class WindowsPrinter {
 
         return String.valueOf(value);
     }
+
+    private String formatQuantity(double qty) {
+        if (qty == Math.floor(qty)) {
+            return String.valueOf((long) qty);
+        }
+        return String.valueOf(qty);
+    }
+
 }

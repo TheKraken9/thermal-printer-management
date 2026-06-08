@@ -23,6 +23,10 @@ public class ReceiptDTO {
 
     public List<ReceiptLineDTO> produits;
 
+    public List<ReceiptExtraLineDTO> saleExtras;
+    public Long totalExtras;
+
+
     // Livraison / retrait
     public String fulfillmentType;
     public String fulfillmentLabel;

@@ -23,3 +23,5 @@ public class ReceiptLineDTO {
     public String note;
     public String unit;
 }
+
+
