@@ -17,6 +17,11 @@ public class WindowsPrinter {
 
         StringBuilder sb = new StringBuilder();
 
+        sb.append(separator('=')).append("\n");
+        sb.append(center("BOUTIQUE DE VENTE")).append("\n");
+        sb.append(center(ascii(resolveSaleBoutiqueName(r)))).append("\n");
+        sb.append(separator('=')).append("\n");
+
         appendCenteredByDash(sb, r.boutiqueName);
 
         if (isNotEmpty(r.boutiqueAddress)) {
@@ -281,7 +286,16 @@ public class WindowsPrinter {
 
         sb.append("\n\n\n\n");
 
-        byte[] textData = sb.toString().getBytes(StandardCharsets.US_ASCII);
+        String ticketText = sb.toString();
+
+        //System.out.println();
+        //System.out.println("============== PREVIEW FACTURE / RECU ==============");
+        //System.out.println(ticketText);
+        //System.out.println("=====================================================");
+        //System.out.println();
+
+        //byte[] textData = sb.toString().getBytes(StandardCharsets.US_ASCII);
+        byte[] textData = ticketText.getBytes(StandardCharsets.US_ASCII);
 
 // commande ESC/POS pour couper
         byte[] cut = new byte[]{0x1D, 0x56, 0x00};
@@ -575,7 +589,7 @@ public class WindowsPrinter {
             return "";
         }
         String formattedAmount = "-" + formatPrice(amount) + " Ar";
-        System.out.println("Montant formatte: " + formattedAmount);
+        //System.out.println("Montant formatte: " + formattedAmount);
 
         if ("percentage".equalsIgnoreCase(type) && value != null && value > 0) {
             return formatPercent(value) + "% (" + formattedAmount + ")";
@@ -599,6 +613,32 @@ public class WindowsPrinter {
             return String.valueOf((long) qty);
         }
         return String.valueOf(qty);
+    }
+
+    private String resolveSaleBoutiqueName(ReceiptDTO r) {
+        if (r == null) return "Non specifie";
+
+        if (isNotEmpty(r.saleBoutiqueName)) {
+            return r.saleBoutiqueName;
+        }
+
+        // Fallback depuis le numero si saleBoutiqueName n'est pas encore envoye
+        // Exemple: ANDR-RDR-20260608-867386
+        String numero = nvl(r.numero);
+
+        if (numero.startsWith("ANTA-")) {
+            return "Antanimena";
+        }
+
+        if (numero.startsWith("ANDR-")) {
+            return "Andrefan'Ambohijanahary";
+        }
+
+        if (numero.startsWith("AMP-")) {
+            return "Ampefiloha";
+        }
+
+        return "Non specifie";
     }
 
 }

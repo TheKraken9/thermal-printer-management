@@ -42,8 +42,11 @@ public class PrintController implements HttpHandler {
             InputStream body = exchange.getRequestBody();
             ReceiptDTO receipt = mapper.readValue(body, ReceiptDTO.class);
 
-            PrinterFacade.print(receipt);
+            //System.out.println("=== RECEIPT TO PRINT ===");
+            //System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(receipt));
+            //System.out.println("========================");
 
+            PrinterFacade.print(receipt);
             exchange.sendResponseHeaders(200, 0);
             exchange.getResponseBody().write("OK".getBytes());
             exchange.close();

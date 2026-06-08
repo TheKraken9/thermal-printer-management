@@ -3,6 +3,7 @@ package agent.dto;
 import java.util.List;
 
 public class ReceiptDTO {
+    public String saleBoutiqueName;
     public String boutiqueName;
     public String boutiqueAddress;
     public String boutiquePhone;
