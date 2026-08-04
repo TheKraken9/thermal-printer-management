@@ -20,8 +20,5 @@ public class PrintAgentApp {
         server.setExecutor(null);
         server.start();
 
-        System.out.println("Print Agent running on http://localhost:9100");
-        System.out.println("  POST /print           → Recu / Facture thermique");
-        System.out.println("  POST /print-proforma  → Proforma thermique");
     }
 }

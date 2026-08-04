@@ -17,7 +17,20 @@ public class WindowsPrinter {
 
         StringBuilder sb = new StringBuilder();
 
+        // ── Bandeau de type BIEN VISIBLE tout en haut (separation nette) ───
+        String docTypeLabel;
+        if ("FACTURE".equals(r.type)) {
+            docTypeLabel = "FACTURE";
+        } else if ("ECHANGE".equals(r.type)) {
+            docTypeLabel = "BON D'ECHANGE";
+        } else {
+            docTypeLabel = "RECU DE VENTE";
+        }
         sb.append(separator('=')).append("\n");
+        sb.append(center("*** " + docTypeLabel + " ***")).append("\n");
+        sb.append(separator('=')).append("\n");
+
+        // ── Lieu de la vente ──────────────────────────────────────────────
         sb.append(center("BOUTIQUE DE VENTE")).append("\n");
         sb.append(center(ascii(resolveSaleBoutiqueName(r)))).append("\n");
         sb.append(separator('=')).append("\n");
@@ -40,8 +53,6 @@ public class WindowsPrinter {
             sb.append(center("STAT: " + ascii(r.boutiqueStat))).append("\n");
         }
 
-        sb.append(center(r.type != null && r.type.equals("FACTURE") ? "FACTURE" : "RECU DE VENTE")).append("\n");
-
         sb.append(separator('=')).append("\n");
 
         sb.append(lineLeftRight("No: " + ascii(nvl(r.numero)), ascii(nvl(r.date)))).append("\n");
@@ -50,8 +61,12 @@ public class WindowsPrinter {
             sb.append("Caissiere: ").append(ascii(r.caissier)).append("\n");
         }
 
+        if (isNotEmpty(r.createdBy)) {
+            sb.append("Vendeuse: ").append(ascii(r.createdBy)).append("\n");
+        }
+
         if (isNotEmpty(r.moreInfo)) {
-            sb.append("Info: ").append(wrapText(ascii(r.moreInfo), LINE_WIDTH - 6)).append("\n");
+            appendMultiline(sb, "Info: ", ascii(r.moreInfo), LINE_WIDTH - 6);
         }
 
         // Client
@@ -282,17 +297,19 @@ public class WindowsPrinter {
         }
 
         sb.append(center("A bientot !")).append("\n");
+
+        // ── Code d'authenticite (verifiable en interne) ───────────────────
+        if (isNotEmpty(r.verifyCode)) {
+            sb.append(separator('-')).append("\n");
+            sb.append(center("Code d'authenticite")).append("\n");
+            sb.append(center(ascii(r.verifyCode))).append("\n");
+        }
+
         sb.append("\n\n\n");
 
         sb.append("\n\n\n\n");
 
         String ticketText = sb.toString();
-
-        //System.out.println();
-        //System.out.println("============== PREVIEW FACTURE / RECU ==============");
-        //System.out.println(ticketText);
-        //System.out.println("=====================================================");
-        //System.out.println();
 
         //byte[] textData = sb.toString().getBytes(StandardCharsets.US_ASCII);
         byte[] textData = ticketText.getBytes(StandardCharsets.US_ASCII);
@@ -434,6 +451,25 @@ public class WindowsPrinter {
         }
 
         return result.toString();
+    }
+
+    /**
+     * Ajoute un texte multi-ligne en respectant les retours a la ligne (\n)
+     * saisis par l'utilisateur ; chaque ligne est en plus repliee a la largeur.
+     * La 1re ligne est prefixee par `prefix`, les suivantes sont indentees.
+     */
+    private void appendMultiline(StringBuilder sb, String prefix, String text, int width) {
+        String indent = " ".repeat(prefix.length());
+        String[] rawLines = (text == null ? "" : text).split("\r?\n", -1);
+        boolean first = true;
+        for (String raw : rawLines) {
+            String wrapped = wrapText(raw, width);
+            String[] parts = wrapped.isEmpty() ? new String[]{""} : wrapped.split("\n");
+            for (String part : parts) {
+                sb.append(first ? prefix : indent).append(part).append("\n");
+                first = false;
+            }
+        }
     }
 
     private String ascii(String input) {
@@ -589,7 +625,6 @@ public class WindowsPrinter {
             return "";
         }
         String formattedAmount = "-" + formatPrice(amount) + " Ar";
-        //System.out.println("Montant formatte: " + formattedAmount);
 
         if ("percentage".equalsIgnoreCase(type) && value != null && value > 0) {
             return formatPercent(value) + "% (" + formattedAmount + ")";

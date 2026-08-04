@@ -14,6 +14,11 @@ public class ReceiptDTO {
     public String type;
     public String date;
     public String caissier;
+    public String createdBy;   // Personne qui a cree la vente
+
+    // Authentification du document
+    public String verifyUrl;
+    public String verifyCode;
 
     public String moreInfo;
 

@@ -25,6 +25,20 @@ public class ProformaThermalPrinter {
 
         StringBuilder sb = new StringBuilder();
 
+        // ── Bandeau PROFORMA BIEN VISIBLE tout en haut (jamais confondu ────
+        //    avec un recu de vente) ──────────────────────────────────────
+        sb.append(separator('=')).append("\n");
+        sb.append(center("*** PROFORMA - DEVIS ***")).append("\n");
+        sb.append(center("(CE N'EST PAS UN RECU DE VENTE)")).append("\n");
+        sb.append(separator('=')).append("\n");
+
+        // ── Lieu de la vente ──────────────────────────────────────────────
+        if (isNotEmpty(p.saleBoutiqueName)) {
+            sb.append(center("BOUTIQUE DE VENTE")).append("\n");
+            sb.append(center(ascii(p.saleBoutiqueName))).append("\n");
+            sb.append(separator('=')).append("\n");
+        }
+
         // ── En-tête entreprise ────────────────────────────────────────────
         appendCenteredByDash(sb, p.boutiqueName);
 
@@ -44,17 +58,26 @@ public class ProformaThermalPrinter {
             sb.append(center("STAT: " + ascii(p.boutiqueStat))).append("\n");
         }
 
-        // ── Type document ─────────────────────────────────────────────────
-        sb.append(separator('=')).append("\n");
-        sb.append(center("** DEVIS / PROFORMA **")).append("\n");
-        sb.append(separator('=')).append("\n");
-
         // ── Numéro + date ─────────────────────────────────────────────────
+        sb.append(separator('=')).append("\n");
         sb.append(lineLeftRight("No: " + ascii(nvl(p.proformaNumber)),
                 ascii(nvl(p.proformaDate)))).append("\n");
 
-        String validity = isNotEmpty(p.validityDays) ? p.validityDays : "30 jours";
-        sb.append(lineLeftRight("Validite:", ascii(validity))).append("\n");
+        // Validite : "30 jours a compter du JJ/MM/AAAA (jusqu'au JJ/MM/AAAA)"
+        String vdays = isNotEmpty(p.validityDays) ? p.validityDays : "30 jours";
+        if (isNotEmpty(p.validityFrom)) {
+            sb.append("Validite: ").append(ascii(vdays))
+              .append(" a compter du ").append(ascii(p.validityFrom)).append("\n");
+            if (isNotEmpty(p.validityUntil)) {
+                sb.append("          (jusqu'au ").append(ascii(p.validityUntil)).append(")\n");
+            }
+        } else {
+            sb.append(lineLeftRight("Validite:", ascii(vdays))).append("\n");
+        }
+
+        if (isNotEmpty(p.createdBy)) {
+            sb.append(lineLeftRight("Vendeuse:", ascii(p.createdBy))).append("\n");
+        }
 
         // ── Client ────────────────────────────────────────────────────────
         if (isNotEmpty(p.clientName)) {
@@ -182,12 +205,12 @@ public class ProformaThermalPrinter {
         // ── Modes de paiement acceptés (toujours fixes) ───────────────────
         sb.append("\n");
         sb.append(center("Modes de paiement acceptes")).append("\n");
-        sb.append(center("Especes | Mobile Money")).append("\n");
+        sb.append(center("Especes | Mobile Money | Cheque")).append("\n");
 
         // ── Notes ─────────────────────────────────────────────────────────
         if (isNotEmpty(p.otherInfo)) {
             sb.append(separator('-')).append("\n");
-            sb.append("Notes: ").append(wrapText(ascii(p.otherInfo), LINE_WIDTH - 7)).append("\n");
+            appendMultiline(sb, "Notes: ", ascii(p.otherInfo), LINE_WIDTH - 7);
         }
 
         // ── Mention légale + pied de page ─────────────────────────────────
@@ -197,6 +220,14 @@ public class ProformaThermalPrinter {
         sb.append(separator('-')).append("\n");
         sb.append(center("Merci pour votre confiance !")).append("\n");
         sb.append(center("Ref: " + ascii(nvl(p.proformaNumber)))).append("\n");
+
+        // ── Code d'authenticite (verifiable en interne) ───────────────────
+        if (isNotEmpty(p.verifyCode)) {
+            sb.append(separator('-')).append("\n");
+            sb.append(center("Code d'authenticite")).append("\n");
+            sb.append(center(ascii(p.verifyCode))).append("\n");
+        }
+
         sb.append("\n\n\n\n");
 
         // ── Envoi à l'imprimante ──────────────────────────────────────────
@@ -310,6 +341,20 @@ public class ProformaThermalPrinter {
             result.append(line);
         }
         return result.toString();
+    }
+
+    private void appendMultiline(StringBuilder sb, String prefix, String text, int width) {
+        String indent = " ".repeat(prefix.length());
+        String[] rawLines = (text == null ? "" : text).split("\r?\n", -1);
+        boolean first = true;
+        for (String raw : rawLines) {
+            String wrapped = wrapText(raw, width);
+            String[] parts = wrapped.isEmpty() ? new String[]{""} : wrapped.split("\n");
+            for (String part : parts) {
+                sb.append(first ? prefix : indent).append(part).append("\n");
+                first = false;
+            }
+        }
     }
 
     private String ascii(String input) {
