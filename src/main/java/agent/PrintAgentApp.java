@@ -11,10 +11,8 @@ public class PrintAgentApp {
     public static void main(String[] args) throws Exception {
         HttpServer server = HttpServer.create(new InetSocketAddress(9100), 0);
 
-        // ── Route existante : impression reçu/facture ──────────────────
         server.createContext("/print", new PrintController());
 
-        // ── Nouvelle route : impression proforma thermique ─────────────
         server.createContext("/print-proforma", new ProformaPrintController());
 
         server.setExecutor(null);

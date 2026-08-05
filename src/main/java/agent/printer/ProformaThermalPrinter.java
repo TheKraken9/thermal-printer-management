@@ -25,21 +25,17 @@ public class ProformaThermalPrinter {
 
         StringBuilder sb = new StringBuilder();
 
-        // ── Bandeau PROFORMA BIEN VISIBLE tout en haut (jamais confondu ────
-        //    avec un recu de vente) ──────────────────────────────────────
         sb.append(separator('=')).append("\n");
         sb.append(center("*** PROFORMA - DEVIS ***")).append("\n");
         sb.append(center("(CE N'EST PAS UN RECU DE VENTE)")).append("\n");
         sb.append(separator('=')).append("\n");
 
-        // ── Lieu de la vente ──────────────────────────────────────────────
         if (isNotEmpty(p.saleBoutiqueName)) {
             sb.append(center("BOUTIQUE DE VENTE")).append("\n");
             sb.append(center(ascii(p.saleBoutiqueName))).append("\n");
             sb.append(separator('=')).append("\n");
         }
 
-        // ── En-tête entreprise ────────────────────────────────────────────
         appendCenteredByDash(sb, p.boutiqueName);
 
         if (isNotEmpty(p.boutiqueAddress)) {
@@ -58,7 +54,6 @@ public class ProformaThermalPrinter {
             sb.append(center("STAT: " + ascii(p.boutiqueStat))).append("\n");
         }
 
-        // ── Numéro + date ─────────────────────────────────────────────────
         sb.append(separator('=')).append("\n");
         sb.append(lineLeftRight("No: " + ascii(nvl(p.proformaNumber)),
                 ascii(nvl(p.proformaDate)))).append("\n");
@@ -79,7 +74,6 @@ public class ProformaThermalPrinter {
             sb.append(lineLeftRight("Vendeuse:", ascii(p.createdBy))).append("\n");
         }
 
-        // ── Client ────────────────────────────────────────────────────────
         if (isNotEmpty(p.clientName)) {
             sb.append(separator('-')).append("\n");
             sb.append("Client: ").append(ascii(p.clientName)).append("\n");
@@ -95,7 +89,6 @@ public class ProformaThermalPrinter {
             }
         }
 
-        // ── Livraison / retrait ───────────────────────────────────────────
         boolean hasFulfillment = isNotEmpty(p.fulfillmentLabel)
                 || isNotEmpty(p.pickupBoutiqueName)
                 || isNotEmpty(p.deliveryAddress)
@@ -137,7 +130,6 @@ public class ProformaThermalPrinter {
             }
         }
 
-        // ── Tableau produits ──────────────────────────────────────────────
         sb.append(separator('=')).append("\n");
         sb.append(lineColumns("Article", "Qte", "P.U.", "Total")).append("\n");
         sb.append(separator('-')).append("\n");
@@ -174,7 +166,6 @@ public class ProformaThermalPrinter {
             }
         }
 
-        // ── Totaux ────────────────────────────────────────────────────────
         sb.append(separator('=')).append("\n");
 
         if (p.sousTotal != null && p.sousTotal > 0) {
@@ -202,18 +193,15 @@ public class ProformaThermalPrinter {
         sb.append(lineLeftRight("TOTAL ESTIME TTC:", formatPrice(p.totalEstime) + " Ar")).append("\n");
         sb.append(separator('-')).append("\n");
 
-        // ── Modes de paiement acceptés (toujours fixes) ───────────────────
         sb.append("\n");
         sb.append(center("Modes de paiement acceptes")).append("\n");
         sb.append(center("Especes | Mobile Money | Cheque")).append("\n");
 
-        // ── Notes ─────────────────────────────────────────────────────────
         if (isNotEmpty(p.otherInfo)) {
             sb.append(separator('-')).append("\n");
             appendMultiline(sb, "Notes: ", ascii(p.otherInfo), LINE_WIDTH - 7);
         }
 
-        // ── Mention légale + pied de page ─────────────────────────────────
         sb.append(separator('=')).append("\n");
         sb.append(center("Ce document est un devis estimatif")).append("\n");
         sb.append(center("et ne constitue pas une facture.")).append("\n");
@@ -221,7 +209,6 @@ public class ProformaThermalPrinter {
         sb.append(center("Merci pour votre confiance !")).append("\n");
         sb.append(center("Ref: " + ascii(nvl(p.proformaNumber)))).append("\n");
 
-        // ── Code d'authenticite (verifiable en interne) ───────────────────
         if (isNotEmpty(p.verifyCode)) {
             sb.append(separator('-')).append("\n");
             sb.append(center("Code d'authenticite")).append("\n");
@@ -230,7 +217,6 @@ public class ProformaThermalPrinter {
 
         sb.append("\n\n\n\n");
 
-        // ── Envoi à l'imprimante ──────────────────────────────────────────
         byte[] textData = sb.toString().getBytes(StandardCharsets.US_ASCII);
         byte[] cut      = new byte[]{ 0x1D, 0x56, 0x00 };
         byte[] finalData = new byte[textData.length + cut.length];
@@ -241,9 +227,6 @@ public class ProformaThermalPrinter {
         job.print(new SimpleDoc(finalData, DocFlavor.BYTE_ARRAY.AUTOSENSE, null), null);
     }
 
-    // ═══════════════════════════════════════════════════════════
-    // HELPERS — identiques à WindowsPrinter
-    // ═══════════════════════════════════════════════════════════
 
     private String formatPrice(long amount) {
         String raw = Long.toString(Math.abs(amount));

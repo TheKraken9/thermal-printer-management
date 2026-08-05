@@ -17,7 +17,6 @@ public class WindowsPrinter {
 
         StringBuilder sb = new StringBuilder();
 
-        // ── Bandeau de type BIEN VISIBLE tout en haut (separation nette) ───
         String docTypeLabel;
         if ("FACTURE".equals(r.type)) {
             docTypeLabel = "FACTURE";
@@ -30,7 +29,6 @@ public class WindowsPrinter {
         sb.append(center("*** " + docTypeLabel + " ***")).append("\n");
         sb.append(separator('=')).append("\n");
 
-        // ── Lieu de la vente ──────────────────────────────────────────────
         sb.append(center("BOUTIQUE DE VENTE")).append("\n");
         sb.append(center(ascii(resolveSaleBoutiqueName(r)))).append("\n");
         sb.append(separator('=')).append("\n");
@@ -298,7 +296,6 @@ public class WindowsPrinter {
 
         sb.append(center("A bientot !")).append("\n");
 
-        // ── Code d'authenticite (verifiable en interne) ───────────────────
         if (isNotEmpty(r.verifyCode)) {
             sb.append(separator('-')).append("\n");
             sb.append(center("Code d'authenticite")).append("\n");
@@ -326,7 +323,6 @@ public class WindowsPrinter {
         job.print(new SimpleDoc(finalData, DocFlavor.BYTE_ARRAY.AUTOSENSE, null), null);
     }
 
-    // ═══════════════════════════════════════════════════════════
 
     private String formatPrice(long amount) {
         String raw = Long.toString(Math.abs(amount));
@@ -657,8 +653,6 @@ public class WindowsPrinter {
             return r.saleBoutiqueName;
         }
 
-        // Fallback depuis le numero si saleBoutiqueName n'est pas encore envoye
-        // Exemple: ANDR-RDR-20260608-867386
         String numero = nvl(r.numero);
 
         if (numero.startsWith("ANTA-")) {

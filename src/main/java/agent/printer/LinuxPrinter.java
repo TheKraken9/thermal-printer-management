@@ -17,7 +17,6 @@ public class LinuxPrinter {
         OutputStream os = new FileOutputStream(DEVICE);
         EscPos escpos = new EscPos(os);
 
-        // ===== STYLES =====
         Style titleStyle = new Style()
                 .setBold(true)
                 .setFontSize(Style.FontSize._1, Style.FontSize._2)
@@ -43,7 +42,6 @@ public class LinuxPrinter {
                 .setFontSize(Style.FontSize._1, Style.FontSize._1)
                 .setJustification(EscPosConst.Justification.Center);
 
-        // ===== EN-TETE BOUTIQUE =====
         escpos.writeLF(titleStyle, ascii(r.boutiqueName));
 
         if (isNotEmpty(r.boutiqueAddress)) {
@@ -65,20 +63,16 @@ public class LinuxPrinter {
             escpos.writeLF(centerStyle, "STAT: " + ascii(r.boutiqueStat));
         }
 
-        // Type de document
         escpos.writeLF(subtitleStyle, r.type != null && r.type.equals("FACTURE") ? "FACTURE" : "RECU DE VENTE");
 
-        // ===== SEPARATEUR =====
         escpos.writeLF(normalStyle, separator('='));
 
-        // ===== INFOS TICKET =====
         escpos.writeLF(normalStyle, lineLeftRight("No: " + ascii(nvl(r.numero)), ascii(nvl(r.date))));
 
         if (isNotEmpty(r.caissier)) {
             escpos.writeLF(normalStyle, "Caissiere: " + ascii(r.caissier));
         }
 
-        // ===== CLIENT =====
         if (isNotEmpty(r.clientName)) {
             escpos.writeLF(normalStyle, separator('='));
             escpos.writeLF(normalStyle, "Client: " + ascii(r.clientName));
@@ -90,14 +84,11 @@ public class LinuxPrinter {
             }
         }
 
-        // ===== SEPARATEUR =====
         escpos.writeLF(normalStyle, separator('='));
 
-        // ===== EN-TETE COLONNES =====
         escpos.writeLF(boldStyle, lineColumns("Article", "Qte", "P.U.", "Total"));
         escpos.writeLF(normalStyle, separator('-'));
 
-        // ===== PRODUITS =====
         if (r.produits != null) {
             for (ReceiptLineDTO l : r.produits) {
                 String designation = ascii(nvl(l.designation));
@@ -114,10 +105,8 @@ public class LinuxPrinter {
             }
         }
 
-        // ===== SEPARATEUR =====
         escpos.writeLF(normalStyle, separator('='));
 
-        // ===== TOTAUX =====
         escpos.writeLF(boldStyle, lineLeftRight("TOTAL TTC:", formatPrice(r.totalTTC) + " Ar"));
         escpos.writeLF(normalStyle, separator('-'));
 
@@ -136,12 +125,10 @@ public class LinuxPrinter {
             escpos.writeLF(normalStyle, lineLeftRight("Monnaie:", formatPrice(r.monnaie) + " Ar"));
         }
 
-        // ===== PIED DE TICKET =====
         escpos.writeLF(normalStyle, separator('='));
         escpos.writeLF(centerStyle, "Merci pour votre achat !");
         escpos.writeLF(centerStyle, "A bientot !");
 
-        // ===== COUPE =====
         escpos.feed(4);
         escpos.cut(EscPos.CutMode.FULL);
 
@@ -149,7 +136,6 @@ public class LinuxPrinter {
         os.close();
     }
 
-    // ═══════════════════════════════════════════════════════════
 
     private String formatPrice(long amount) {
         String raw = Long.toString(Math.abs(amount));
