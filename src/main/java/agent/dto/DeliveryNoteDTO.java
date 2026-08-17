@@ -40,8 +40,13 @@ public class DeliveryNoteDTO {
     // ── Produits livres ───────────────────────────────────────────────────
     public List<DeliveryLineDTO> lignes;
 
-    // ── Frais de livraison (affichage informatif) ─────────────────────────
+    // ── Frais de livraison (inclus dans le total) ─────────────────────────
     public Long deliveryFee;
+
+    // ── Montants pour le livreur (encaissement à la livraison) ────────────
+    public Long totalAmount;      // total TTC de la vente (frais inclus)
+    public Long amountPaid;       // déjà payé
+    public Long remainingAmount;  // reste à encaisser à la livraison
 
     // ── Authentification du document ──────────────────────────────────────
     public String verifyUrl;

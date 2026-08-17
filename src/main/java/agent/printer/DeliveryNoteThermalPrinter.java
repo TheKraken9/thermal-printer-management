@@ -105,10 +105,28 @@ public class DeliveryNoteThermalPrinter {
 
         sb.append(separator('=')).append("\n");
 
-        if (d.deliveryFee != null && d.deliveryFee > 0) {
-            sb.append(lineLeftRight("Frais de livraison:", formatPrice(d.deliveryFee) + " Ar")).append("\n");
-            sb.append(separator('=')).append("\n");
+        // ── Montants pour le livreur (encaissement à la livraison) ────────
+        sb.append(center("A ENCAISSER A LA LIVRAISON")).append("\n");
+        sb.append(separator('-')).append("\n");
+        if (d.totalAmount != null) {
+            sb.append(lineLeftRight("Total vente:", formatPrice(d.totalAmount) + " Ar")).append("\n");
         }
+        if (d.deliveryFee != null && d.deliveryFee > 0) {
+            sb.append(lineLeftRight("  dont frais livraison:", formatPrice(d.deliveryFee) + " Ar")).append("\n");
+        }
+        if (d.amountPaid != null && d.amountPaid > 0) {
+            sb.append(lineLeftRight("Deja paye:", formatPrice(d.amountPaid) + " Ar")).append("\n");
+        }
+        long reste = d.remainingAmount != null
+                ? d.remainingAmount
+                : (d.totalAmount != null ? d.totalAmount : 0L) - (d.amountPaid != null ? d.amountPaid : 0L);
+        sb.append(separator('-')).append("\n");
+        if (reste > 0) {
+            sb.append(lineLeftRight(">> RESTE A PAYER:", formatPrice(reste) + " Ar")).append("\n");
+        } else {
+            sb.append(center("** DEJA REGLE - RIEN A ENCAISSER **")).append("\n");
+        }
+        sb.append(separator('=')).append("\n");
 
         // ── Signatures ────────────────────────────────────────────────────
         sb.append("\n");
