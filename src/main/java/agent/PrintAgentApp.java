@@ -3,6 +3,7 @@ package agent;
 import com.sun.net.httpserver.HttpServer;
 import agent.controller.PrintController;
 import agent.controller.ProformaPrintController;
+import agent.controller.DeliveryNotePrintController;
 
 import java.net.InetSocketAddress;
 
@@ -14,6 +15,8 @@ public class PrintAgentApp {
         server.createContext("/print", new PrintController());
 
         server.createContext("/print-proforma", new ProformaPrintController());
+
+        server.createContext("/print-delivery", new DeliveryNotePrintController());
 
         server.setExecutor(null);
         server.start();
