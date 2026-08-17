@@ -1,5 +1,7 @@
 package agent.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.util.List;
 
 /**
@@ -7,6 +9,7 @@ import java.util.List;
  * Distinct de ReceiptDTO car un proforma n'a pas de montant payé,
  * ni de caissier, ni de monnaie rendue.
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ProformaDTO {
 
     // ── Entreprise ────────────────────────────────────────────────────────
@@ -54,6 +57,9 @@ public class ProformaDTO {
     public Long   discountAmount;
     public String discountReason;
     public long   totalEstime;      // TOTAL ESTIMÉ TTC
+
+    // Si false, les totaux (sous-total, remise, total estime) sont masques.
+    public Boolean showTotal;
 
     // ── Notes ─────────────────────────────────────────────────────────────
     public String otherInfo;

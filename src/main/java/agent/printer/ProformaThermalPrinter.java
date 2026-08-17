@@ -135,7 +135,20 @@ public class ProformaThermalPrinter {
         sb.append(separator('-')).append("\n");
 
         if (p.lignes != null) {
+            String curGroupTitle = null;
+            String curGroupSub = null;
             for (ProformaLineDTO l : p.lignes) {
+                // En-tete de groupe (piece / sous-titre) imprime au changement.
+                if (isNotEmpty(l.groupTitle) && !l.groupTitle.equals(curGroupTitle)) {
+                    curGroupTitle = l.groupTitle;
+                    curGroupSub = null;
+                    sb.append(center(">> " + ascii(l.groupTitle).toUpperCase() + " <<")).append("\n");
+                }
+                if (isNotEmpty(l.groupSubtitle) && !l.groupSubtitle.equals(curGroupSub)) {
+                    curGroupSub = l.groupSubtitle;
+                    sb.append("* ").append(ascii(l.groupSubtitle)).append("\n");
+                }
+
                 String designation = ascii(nvl(l.designation));
                 String qte   = formatQuantity(l.quantite);
                 String pu    = formatPrice(l.prixUnitaire);
@@ -168,30 +181,33 @@ public class ProformaThermalPrinter {
 
         sb.append(separator('=')).append("\n");
 
-        if (p.sousTotal != null && p.sousTotal > 0) {
-            sb.append(lineLeftRight("Sous-total:", formatPrice(p.sousTotal) + " Ar")).append("\n");
-        }
-
-        if (p.deliveryFeeTotal != null && p.deliveryFeeTotal > 0) {
-            sb.append(lineLeftRight("Livraison:", formatPrice(p.deliveryFeeTotal) + " Ar")).append("\n");
-        }
-
-        if (Boolean.TRUE.equals(p.hasDiscount)
-                && p.discountAmount != null && p.discountAmount > 0) {
-
-            String discLabel = buildDiscountLabel(p.discountType, p.discountValue, p.discountAmount);
-            sb.append(lineLeftRight("Remise:", discLabel)).append("\n");
-
-            if (isNotEmpty(p.discountReason)) {
-                sb.append("Raison: ")
-                        .append(wrapText(ascii(p.discountReason), LINE_WIDTH - 8))
-                        .append("\n");
+        // Totaux masques si showTotal == false (devis sans montants).
+        if (!Boolean.FALSE.equals(p.showTotal)) {
+            if (p.sousTotal != null && p.sousTotal > 0) {
+                sb.append(lineLeftRight("Sous-total:", formatPrice(p.sousTotal) + " Ar")).append("\n");
             }
-        }
 
-        sb.append(separator('-')).append("\n");
-        sb.append(lineLeftRight("TOTAL ESTIME TTC:", formatPrice(p.totalEstime) + " Ar")).append("\n");
-        sb.append(separator('-')).append("\n");
+            if (p.deliveryFeeTotal != null && p.deliveryFeeTotal > 0) {
+                sb.append(lineLeftRight("Livraison:", formatPrice(p.deliveryFeeTotal) + " Ar")).append("\n");
+            }
+
+            if (Boolean.TRUE.equals(p.hasDiscount)
+                    && p.discountAmount != null && p.discountAmount > 0) {
+
+                String discLabel = buildDiscountLabel(p.discountType, p.discountValue, p.discountAmount);
+                sb.append(lineLeftRight("Remise:", discLabel)).append("\n");
+
+                if (isNotEmpty(p.discountReason)) {
+                    sb.append("Raison: ")
+                            .append(wrapText(ascii(p.discountReason), LINE_WIDTH - 8))
+                            .append("\n");
+                }
+            }
+
+            sb.append(separator('-')).append("\n");
+            sb.append(lineLeftRight("TOTAL ESTIME TTC:", formatPrice(p.totalEstime) + " Ar")).append("\n");
+            sb.append(separator('-')).append("\n");
+        }
 
         sb.append("\n");
         sb.append(center("Modes de paiement acceptes")).append("\n");

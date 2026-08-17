@@ -131,7 +131,20 @@ public class WindowsPrinter {
         sb.append(separator('-')).append("\n");
 
         if (r.produits != null) {
+            String curGroupTitle = null;
+            String curGroupSub = null;
             for (ReceiptLineDTO l : r.produits) {
+                // En-tete de groupe (piece / sous-titre) imprime au changement.
+                if (isNotEmpty(l.groupTitle) && !l.groupTitle.equals(curGroupTitle)) {
+                    curGroupTitle = l.groupTitle;
+                    curGroupSub = null;
+                    sb.append(center(">> " + ascii(l.groupTitle).toUpperCase() + " <<")).append("\n");
+                }
+                if (isNotEmpty(l.groupSubtitle) && !l.groupSubtitle.equals(curGroupSub)) {
+                    curGroupSub = l.groupSubtitle;
+                    sb.append("* ").append(ascii(l.groupSubtitle)).append("\n");
+                }
+
                 String designation = ascii(nvl(l.designation));
                 String qte = String.valueOf(l.quantite);
                 String pu = formatPrice(l.prixUnitaire);

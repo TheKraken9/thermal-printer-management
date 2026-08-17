@@ -1,5 +1,8 @@
 package agent.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ReceiptExtraLineDTO {
     public String label;
     public double quantity;
