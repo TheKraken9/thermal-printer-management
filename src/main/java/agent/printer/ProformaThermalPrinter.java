@@ -20,8 +20,9 @@ public class ProformaThermalPrinter {
     private static final int LINE_WIDTH = 48;
 
     public void print(ProformaDTO p) throws Exception {
+        // Peut etre null sur un poste de dev sans imprimante : on ne plante pas,
+        // on ecrit le proforma dans un fichier (voir plus bas).
         PrintService service = PrintServiceLookup.lookupDefaultPrintService();
-        if (service == null) throw new RuntimeException("Aucune imprimante Windows disponible");
 
         StringBuilder sb = new StringBuilder();
 
@@ -243,6 +244,16 @@ public class ProformaThermalPrinter {
         System.out.println("----------------------------------------------------");
         System.out.println(ticketText);
         System.out.println("========== FIN PROFORMA ==========\n");
+
+        // Poste de dev sans imprimante : on ecrit le proforma dans un fichier.
+        if (service == null) {
+            java.nio.file.Path out = java.nio.file.Paths.get(
+                    System.getProperty("java.io.tmpdir"),
+                    "proforma-" + System.currentTimeMillis() + ".txt");
+            java.nio.file.Files.write(out, ticketText.getBytes(StandardCharsets.UTF_8));
+            System.out.println("Aucune imprimante detectee (poste de dev). Proforma ecrit dans : " + out);
+            return;
+        }
 
         byte[] textData = ticketText.getBytes(StandardCharsets.US_ASCII);
         byte[] cut      = new byte[]{ 0x1D, 0x56, 0x00 };

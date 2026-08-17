@@ -14,7 +14,17 @@ public class WindowsPrinter {
     public void print(ReceiptDTO r) throws Exception {
         PrintService service = PrintServiceLookup.lookupDefaultPrintService();
         if (service == null) throw new RuntimeException("Aucune imprimante Windows");
+        String ticketText = buildTicket(r);
+        System.out.println("Imprimante : " + service.getName());
+        sendToPrinter(service, ticketText);
+    }
 
+    /**
+     * Construit le texte complet du ticket (recu / facture / echange).
+     * Extrait de print() pour etre reutilise par LinuxPrinter : la mise en page
+     * est ainsi unique et identique sur Windows et Linux.
+     */
+    public String buildTicket(ReceiptDTO r) {
         StringBuilder sb = new StringBuilder();
 
         String docTypeLabel;
@@ -323,20 +333,23 @@ public class WindowsPrinter {
 
         // ── DEBUG : apercu du ticket dans la console de l'agent ──────────────
         System.out.println("\n========== TICKET (" + docTypeLabel + ") ==========");
-        System.out.println("Imprimante : " + service.getName());
         System.out.println("Nb produits : " + (r.produits != null ? r.produits.size() : 0)
                 + " | Frais supp. : " + (r.saleExtras != null ? r.saleExtras.size() : 0));
         System.out.println("----------------------------------------------------");
         System.out.println(ticketText);
         System.out.println("========== FIN TICKET ==========\n");
 
-        //byte[] textData = sb.toString().getBytes(StandardCharsets.US_ASCII);
+        return ticketText;
+    }
+
+    /** Envoie le texte a l'imprimante (ESC/POS + coupe papier). Commun Windows/Linux. */
+    static void sendToPrinter(PrintService service, String ticketText) throws Exception {
         byte[] textData = ticketText.getBytes(StandardCharsets.US_ASCII);
 
-// commande ESC/POS pour couper
+        // commande ESC/POS pour couper
         byte[] cut = new byte[]{0x1D, 0x56, 0x00};
 
-// concaténer
+        // concaténer
         byte[] finalData = new byte[textData.length + cut.length];
         System.arraycopy(textData, 0, finalData, 0, textData.length);
         System.arraycopy(cut, 0, finalData, textData.length, cut.length);
