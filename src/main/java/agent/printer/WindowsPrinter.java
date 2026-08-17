@@ -229,12 +229,6 @@ public class WindowsPrinter {
                             .append("\n");
                 }
             }
-
-            // Sous-total frais supplémentaires
-            if (r.totalExtras != null && r.totalExtras > 0) {
-                sb.append(separator('-')).append("\n");
-                sb.append(lineLeftRight("Total frais supp.:", formatPrice(r.totalExtras) + " Ar")).append("\n");
-            }
         }
 
 
@@ -259,6 +253,11 @@ public class WindowsPrinter {
 
         if (r.deliveryFee != null && r.deliveryFee > 0) {
             sb.append(lineLeftRight("Livraison:", formatPrice(r.deliveryFee) + " Ar")).append("\n");
+        }
+
+        // Frais supplementaires inclus dans le total (uniquement s'il y en a).
+        if (r.totalExtras != null && r.totalExtras > 0) {
+            sb.append(lineLeftRight("Frais supp.:", formatPrice(r.totalExtras) + " Ar")).append("\n");
         }
 
         if (r.discountAmount != null && r.discountAmount > 0) {
