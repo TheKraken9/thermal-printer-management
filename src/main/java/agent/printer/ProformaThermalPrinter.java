@@ -233,7 +233,18 @@ public class ProformaThermalPrinter {
 
         sb.append("\n\n\n\n");
 
-        byte[] textData = sb.toString().getBytes(StandardCharsets.US_ASCII);
+        String ticketText = sb.toString();
+
+        // ── DEBUG : apercu du proforma dans la console de l'agent ────────────
+        System.out.println("\n========== PROFORMA " + nvl(p.proformaNumber) + " ==========");
+        System.out.println("Imprimante : " + service.getName());
+        System.out.println("Nb lignes : " + (p.lignes != null ? p.lignes.size() : 0)
+                + " | showTotal : " + p.showTotal);
+        System.out.println("----------------------------------------------------");
+        System.out.println(ticketText);
+        System.out.println("========== FIN PROFORMA ==========\n");
+
+        byte[] textData = ticketText.getBytes(StandardCharsets.US_ASCII);
         byte[] cut      = new byte[]{ 0x1D, 0x56, 0x00 };
         byte[] finalData = new byte[textData.length + cut.length];
         System.arraycopy(textData, 0, finalData, 0, textData.length);

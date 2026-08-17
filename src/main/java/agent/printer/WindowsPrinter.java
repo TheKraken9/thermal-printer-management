@@ -321,6 +321,15 @@ public class WindowsPrinter {
 
         String ticketText = sb.toString();
 
+        // ── DEBUG : apercu du ticket dans la console de l'agent ──────────────
+        System.out.println("\n========== TICKET (" + docTypeLabel + ") ==========");
+        System.out.println("Imprimante : " + service.getName());
+        System.out.println("Nb produits : " + (r.produits != null ? r.produits.size() : 0)
+                + " | Frais supp. : " + (r.saleExtras != null ? r.saleExtras.size() : 0));
+        System.out.println("----------------------------------------------------");
+        System.out.println(ticketText);
+        System.out.println("========== FIN TICKET ==========\n");
+
         //byte[] textData = sb.toString().getBytes(StandardCharsets.US_ASCII);
         byte[] textData = ticketText.getBytes(StandardCharsets.US_ASCII);
 
