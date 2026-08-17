@@ -190,11 +190,11 @@ public class WindowsPrinter {
         }
 
 
-        // Frais supplémentaires
+        // Frais supplémentaires : integres dans la liste des produits vendus
+        // (a la suite des articles, meme tableau), sans section separee.
         if (r.saleExtras != null && !r.saleExtras.isEmpty()) {
-            sb.append(separator('=')).append("\n");
-            sb.append(center("FRAIS SUPPLEMENTAIRES")).append("\n");
             sb.append(separator('-')).append("\n");
+            sb.append("Frais supplementaires :").append("\n");
 
             for (ReceiptExtraLineDTO extra : r.saleExtras) {
                 // Libellé + date
@@ -333,9 +333,6 @@ public class WindowsPrinter {
 
         // ── DEBUG : apercu du ticket dans la console de l'agent ──────────────
         System.out.println("\n========== TICKET (" + docTypeLabel + ") ==========");
-        System.out.println("Nb produits : " + (r.produits != null ? r.produits.size() : 0)
-                + " | Frais supp. : " + (r.saleExtras != null ? r.saleExtras.size() : 0));
-        System.out.println("----------------------------------------------------");
         System.out.println(ticketText);
         System.out.println("========== FIN TICKET ==========\n");
 
