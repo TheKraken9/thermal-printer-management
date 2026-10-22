@@ -19,7 +19,6 @@ public class ProformaPrintController implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) {
         try {
-            // ── CORS ──────────────────────────────────────────────────────
             String origin = exchange.getRequestHeaders().getFirst("Origin");
             if (origin != null) {
                 exchange.getResponseHeaders().add("Access-Control-Allow-Origin", origin);
@@ -30,7 +29,6 @@ public class ProformaPrintController implements HttpHandler {
             exchange.getResponseHeaders().add("Access-Control-Allow-Headers", "Content-Type");
             exchange.getResponseHeaders().add("Access-Control-Allow-Credentials", "true");
 
-            // ── Preflight ─────────────────────────────────────────────────
             if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
                 exchange.sendResponseHeaders(204, -1);
                 return;
@@ -41,7 +39,6 @@ public class ProformaPrintController implements HttpHandler {
                 return;
             }
 
-            // ── Désérialisation + impression ──────────────────────────────
             InputStream body = exchange.getRequestBody();
             ProformaDTO proforma = mapper.readValue(body, ProformaDTO.class);
 
