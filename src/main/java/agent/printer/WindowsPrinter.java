@@ -14,7 +14,17 @@ public class WindowsPrinter {
     public void print(ReceiptDTO r) throws Exception {
         PrintService service = PrintServiceLookup.lookupDefaultPrintService();
         if (service == null) throw new RuntimeException("Aucune imprimante Windows");
+        String ticketText = buildTicket(r);
+        System.out.println("Imprimante : " + service.getName());
+        sendToPrinter(service, ticketText);
+    }
 
+    /**
+     * Construit le texte complet du ticket (recu / facture / echange).
+     * Extrait de print() pour etre reutilise par LinuxPrinter : la mise en page
+     * est ainsi unique et identique sur Windows et Linux.
+     */
+    public String buildTicket(ReceiptDTO r) {
         StringBuilder sb = new StringBuilder();
 
         String docTypeLabel;
@@ -131,7 +141,20 @@ public class WindowsPrinter {
         sb.append(separator('-')).append("\n");
 
         if (r.produits != null) {
+            String curGroupTitle = null;
+            String curGroupSub = null;
             for (ReceiptLineDTO l : r.produits) {
+                // En-tete de groupe (piece / sous-titre) imprime au changement.
+                if (isNotEmpty(l.groupTitle) && !l.groupTitle.equals(curGroupTitle)) {
+                    curGroupTitle = l.groupTitle;
+                    curGroupSub = null;
+                    sb.append(center(">> " + ascii(l.groupTitle).toUpperCase() + " <<")).append("\n");
+                }
+                if (isNotEmpty(l.groupSubtitle) && !l.groupSubtitle.equals(curGroupSub)) {
+                    curGroupSub = l.groupSubtitle;
+                    sb.append("* ").append(ascii(l.groupSubtitle)).append("\n");
+                }
+
                 String designation = ascii(nvl(l.designation));
                 String qte = String.valueOf(l.quantite);
                 String pu = formatPrice(l.prixUnitaire);
@@ -167,11 +190,11 @@ public class WindowsPrinter {
         }
 
 
-        // Frais supplémentaires
+        // Frais supplémentaires : integres dans la liste des produits vendus
+        // (a la suite des articles, meme tableau), sans section separee.
         if (r.saleExtras != null && !r.saleExtras.isEmpty()) {
-            sb.append(separator('=')).append("\n");
-            sb.append(center("FRAIS SUPPLEMENTAIRES")).append("\n");
             sb.append(separator('-')).append("\n");
+            sb.append("Frais supplementaires :").append("\n");
 
             for (ReceiptExtraLineDTO extra : r.saleExtras) {
                 // Libellé + date
@@ -206,12 +229,6 @@ public class WindowsPrinter {
                             .append("\n");
                 }
             }
-
-            // Sous-total frais supplémentaires
-            if (r.totalExtras != null && r.totalExtras > 0) {
-                sb.append(separator('-')).append("\n");
-                sb.append(lineLeftRight("Total frais supp.:", formatPrice(r.totalExtras) + " Ar")).append("\n");
-            }
         }
 
 
@@ -236,6 +253,11 @@ public class WindowsPrinter {
 
         if (r.deliveryFee != null && r.deliveryFee > 0) {
             sb.append(lineLeftRight("Livraison:", formatPrice(r.deliveryFee) + " Ar")).append("\n");
+        }
+
+        // Frais supplementaires inclus dans le total (uniquement s'il y en a).
+        if (r.totalExtras != null && r.totalExtras > 0) {
+            sb.append(lineLeftRight("Frais supp.:", formatPrice(r.totalExtras) + " Ar")).append("\n");
         }
 
         if (r.discountAmount != null && r.discountAmount > 0) {
@@ -308,13 +330,22 @@ public class WindowsPrinter {
 
         String ticketText = sb.toString();
 
-        //byte[] textData = sb.toString().getBytes(StandardCharsets.US_ASCII);
+        // ── DEBUG : apercu du ticket dans la console de l'agent ──────────────
+        System.out.println("\n========== TICKET (" + docTypeLabel + ") ==========");
+        System.out.println(ticketText);
+        System.out.println("========== FIN TICKET ==========\n");
+
+        return ticketText;
+    }
+
+    /** Envoie le texte a l'imprimante (ESC/POS + coupe papier). Commun Windows/Linux. */
+    static void sendToPrinter(PrintService service, String ticketText) throws Exception {
         byte[] textData = ticketText.getBytes(StandardCharsets.US_ASCII);
 
-// commande ESC/POS pour couper
+        // commande ESC/POS pour couper
         byte[] cut = new byte[]{0x1D, 0x56, 0x00};
 
-// concaténer
+        // concaténer
         byte[] finalData = new byte[textData.length + cut.length];
         System.arraycopy(textData, 0, finalData, 0, textData.length);
         System.arraycopy(cut, 0, finalData, textData.length, cut.length);

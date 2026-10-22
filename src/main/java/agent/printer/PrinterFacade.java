@@ -7,14 +7,12 @@ public class PrinterFacade {
     public static void print(ReceiptDTO receipt) throws Exception {
         String os = System.getProperty("os.name").toLowerCase();
 
-        if (os.contains("linux")) {
-            //new LinuxPrinter().print(receipt);
-            //new LinuxPrinter().print(receipt);
-            new WindowsPrinter().print(receipt);
-        } else if (os.contains("win")) {
+        if (os.contains("win")) {
             new WindowsPrinter().print(receipt);
         } else {
-            throw new RuntimeException("OS non supporté: " + os);
+            // Linux (postes de dev) et macOS : meme mecanisme (USB direct / CUPS),
+            // avec repli fichier si aucune imprimante n'est branchee.
+            new LinuxPrinter().print(receipt);
         }
     }
 }

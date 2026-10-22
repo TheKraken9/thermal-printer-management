@@ -1,6 +1,14 @@
 package agent.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ReceiptLineDTO {
+
+    // Groupement par piece : titre (ex: "Salon") et sous-titre (ex: "Fenetre 1").
+    public String groupTitle;
+    public String groupSubtitle;
+
     public String designation;
     public int quantite;
     public long prixUnitaire;
