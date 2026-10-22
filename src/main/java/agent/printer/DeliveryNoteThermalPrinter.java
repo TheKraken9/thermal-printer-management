@@ -151,10 +151,6 @@ public class DeliveryNoteThermalPrinter {
 
         String ticketText = sb.toString();
 
-        // ── DEBUG : apercu dans la console de l'agent ─────────────────────
-        System.out.println("\n========== BON DE LIVRAISON " + nvl(d.numero) + " ==========");
-        System.out.println(ticketText);
-        System.out.println("========== FIN BON DE LIVRAISON ==========\n");
 
         // Poste de dev sans imprimante : on ecrit le bon dans un fichier.
         if (service == null) {
@@ -162,11 +158,9 @@ public class DeliveryNoteThermalPrinter {
                     System.getProperty("java.io.tmpdir"),
                     "bon-livraison-" + System.currentTimeMillis() + ".txt");
             java.nio.file.Files.write(out, ticketText.getBytes(StandardCharsets.UTF_8));
-            System.out.println("Aucune imprimante detectee (poste de dev). Bon de livraison ecrit dans : " + out);
             return;
         }
 
-        System.out.println("Imprimante : " + service.getName());
         WindowsPrinter.sendToPrinter(service, ticketText);
     }
 

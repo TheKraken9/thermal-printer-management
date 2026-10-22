@@ -236,14 +236,6 @@ public class ProformaThermalPrinter {
 
         String ticketText = sb.toString();
 
-        // ── DEBUG : apercu du proforma dans la console de l'agent ────────────
-        System.out.println("\n========== PROFORMA " + nvl(p.proformaNumber) + " ==========");
-        System.out.println("Imprimante : " + service.getName());
-        System.out.println("Nb lignes : " + (p.lignes != null ? p.lignes.size() : 0)
-                + " | showTotal : " + p.showTotal);
-        System.out.println("----------------------------------------------------");
-        System.out.println(ticketText);
-        System.out.println("========== FIN PROFORMA ==========\n");
 
         // Poste de dev sans imprimante : on ecrit le proforma dans un fichier.
         if (service == null) {
@@ -251,7 +243,6 @@ public class ProformaThermalPrinter {
                     System.getProperty("java.io.tmpdir"),
                     "proforma-" + System.currentTimeMillis() + ".txt");
             java.nio.file.Files.write(out, ticketText.getBytes(StandardCharsets.UTF_8));
-            System.out.println("Aucune imprimante detectee (poste de dev). Proforma ecrit dans : " + out);
             return;
         }
 

@@ -36,7 +36,6 @@ public class LinuxPrinter {
                     os.write(concatCut(ticketText));
                     os.flush();
                 }
-                System.out.println("Imprime sur " + dev);
                 return;
             }
         }
@@ -44,7 +43,6 @@ public class LinuxPrinter {
         // 2. Imprimante par defaut du systeme (CUPS).
         PrintService service = PrintServiceLookup.lookupDefaultPrintService();
         if (service != null) {
-            System.out.println("Imprimante : " + service.getName());
             WindowsPrinter.sendToPrinter(service, ticketText);
             return;
         }
@@ -53,7 +51,6 @@ public class LinuxPrinter {
         Path out = Paths.get(System.getProperty("java.io.tmpdir"),
                 "ticket-" + System.currentTimeMillis() + ".txt");
         Files.write(out, ticketText.getBytes(StandardCharsets.UTF_8));
-        System.out.println("Aucune imprimante detectee (poste de dev). Ticket ecrit dans : " + out);
     }
 
     private static byte[] concatCut(String text) {

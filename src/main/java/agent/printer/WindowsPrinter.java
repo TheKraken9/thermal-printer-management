@@ -15,7 +15,6 @@ public class WindowsPrinter {
         PrintService service = PrintServiceLookup.lookupDefaultPrintService();
         if (service == null) throw new RuntimeException("Aucune imprimante Windows");
         String ticketText = buildTicket(r);
-        System.out.println("Imprimante : " + service.getName());
         sendToPrinter(service, ticketText);
     }
 
@@ -330,10 +329,6 @@ public class WindowsPrinter {
 
         String ticketText = sb.toString();
 
-        // ── DEBUG : apercu du ticket dans la console de l'agent ──────────────
-        System.out.println("\n========== TICKET (" + docTypeLabel + ") ==========");
-        System.out.println(ticketText);
-        System.out.println("========== FIN TICKET ==========\n");
 
         return ticketText;
     }
