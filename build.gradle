@@ -25,6 +25,12 @@ dependencies {
 }
 
 
+// Sources en UTF-8 : sous Windows, javac lit par defaut en windows-1252 et
+// echoue sur les caracteres accentues ("unmappable character").
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
 application {
     mainClass = 'agent.PrintAgentApp'
 }

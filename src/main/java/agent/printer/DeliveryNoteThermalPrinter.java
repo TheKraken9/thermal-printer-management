@@ -265,26 +265,26 @@ public class DeliveryNoteThermalPrinter {
         for (int i = 0; i < input.length(); i++) {
             char ch = input.charAt(i);
             switch (ch) {
-                case 'à': case 'â': case 'ä': case 'á': sb.append('a'); break;
-                case 'è': case 'ê': case 'ë': case 'é': sb.append('e'); break;
-                case 'ì': case 'î': case 'ï': case 'í': sb.append('i'); break;
-                case 'ò': case 'ô': case 'ö': case 'ó': sb.append('o'); break;
-                case 'ù': case 'û': case 'ü': case 'ú': sb.append('u'); break;
-                case 'ç': sb.append('c'); break;
-                case 'ñ': sb.append('n'); break;
-                case 'À': case 'Â': case 'Ä': case 'Á': sb.append('A'); break;
-                case 'È': case 'Ê': case 'Ë': case 'É': sb.append('E'); break;
-                case 'Ì': case 'Î': case 'Ï': case 'Í': sb.append('I'); break;
-                case 'Ò': case 'Ô': case 'Ö': case 'Ó': sb.append('O'); break;
-                case 'Ù': case 'Û': case 'Ü': case 'Ú': sb.append('U'); break;
-                case 'Ç': sb.append('C'); break;
-                case 'Ñ': sb.append('N'); break;
-                case '°': sb.append('o'); break;
-                case '«': case '»': sb.append('"'); break;
-                case '‘': case '’': sb.append('\''); break;
-                case '“': case '”': sb.append('"'); break;
-                case '–': case '—': sb.append('-'); break;
-                case ' ': case ' ': sb.append(' '); break;
+                case '\u00e0': case '\u00e2': case '\u00e4': case '\u00e1': sb.append('a'); break;
+                case '\u00e8': case '\u00ea': case '\u00eb': case '\u00e9': sb.append('e'); break;
+                case '\u00ec': case '\u00ee': case '\u00ef': case '\u00ed': sb.append('i'); break;
+                case '\u00f2': case '\u00f4': case '\u00f6': case '\u00f3': sb.append('o'); break;
+                case '\u00f9': case '\u00fb': case '\u00fc': case '\u00fa': sb.append('u'); break;
+                case '\u00e7': sb.append('c'); break;
+                case '\u00f1': sb.append('n'); break;
+                case '\u00c0': case '\u00c2': case '\u00c4': case '\u00c1': sb.append('A'); break;
+                case '\u00c8': case '\u00ca': case '\u00cb': case '\u00c9': sb.append('E'); break;
+                case '\u00cc': case '\u00ce': case '\u00cf': case '\u00cd': sb.append('I'); break;
+                case '\u00d2': case '\u00d4': case '\u00d6': case '\u00d3': sb.append('O'); break;
+                case '\u00d9': case '\u00db': case '\u00dc': case '\u00da': sb.append('U'); break;
+                case '\u00c7': sb.append('C'); break;
+                case '\u00d1': sb.append('N'); break;
+                case '\u00b0': sb.append('o'); break;
+                case '\u00ab': case '\u00bb': sb.append('"'); break;
+                case '\u2018': case '\u2019': sb.append('\''); break;
+                case '\u201c': case '\u201d': sb.append('"'); break;
+                case '\u2013': case '\u2014': sb.append('-'); break;
+                case '\u00a0': case '\u202f': sb.append(' '); break;
                 default:
                     if (ch < 0x80) sb.append(ch);
                     break;

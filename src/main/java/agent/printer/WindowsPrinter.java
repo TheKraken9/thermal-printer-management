@@ -633,7 +633,7 @@ public class WindowsPrinter {
         if (!isNotEmpty(text)) return;
 
         String cleanText = ascii(text);
-        String[] parts = cleanText.split("\\s*[-–—]\\s*");
+        String[] parts = cleanText.split("\\s*[-\u2013\u2014]\\s*");
 
         for (String part : parts) {
             if (isNotEmpty(part)) {
