@@ -30,7 +30,6 @@ public class DeliveryNoteThermalPrinter {
             sb.append(separator('=')).append("\n");
         }
 
-        // ── Entreprise ────────────────────────────────────────────────────
         appendCenteredByDash(sb, d.boutiqueName);
         if (isNotEmpty(d.boutiqueAddress)) appendCenteredByDash(sb, d.boutiqueAddress);
         if (isNotEmpty(d.boutiquePhone))   sb.append(center("Tel: " + ascii(d.boutiquePhone))).append("\n");
@@ -38,7 +37,6 @@ public class DeliveryNoteThermalPrinter {
         if (isNotEmpty(d.boutiqueStat))    sb.append(center("STAT: " + ascii(d.boutiqueStat))).append("\n");
         sb.append(separator('=')).append("\n");
 
-        // ── Entête document ───────────────────────────────────────────────
         String dateHeure = ascii(nvl(d.date));
         if (isNotEmpty(d.time)) dateHeure += " " + ascii(d.time);
         sb.append(lineLeftRight("No: " + ascii(nvl(d.numero)), dateHeure)).append("\n");
@@ -47,7 +45,6 @@ public class DeliveryNoteThermalPrinter {
         }
         sb.append(separator('=')).append("\n");
 
-        // ── Destinataire ──────────────────────────────────────────────────
         sb.append(center("LIVRER A")).append("\n");
         sb.append(separator('-')).append("\n");
         if (isNotEmpty(d.clientName))  sb.append(ascii(d.clientName)).append("\n");
@@ -66,7 +63,6 @@ public class DeliveryNoteThermalPrinter {
         }
         sb.append(separator('=')).append("\n");
 
-        // ── Produits livrés (sans prix) ───────────────────────────────────
         sb.append(lineLeftRight("Article", "Qte")).append("\n");
         sb.append(separator('-')).append("\n");
 

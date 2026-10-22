@@ -19,7 +19,6 @@ public class DeliveryNotePrintController implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) {
         try {
-            // ── CORS ──────────────────────────────────────────────────────
             String origin = exchange.getRequestHeaders().getFirst("Origin");
             if (origin != null) {
                 exchange.getResponseHeaders().add("Access-Control-Allow-Origin", origin);
